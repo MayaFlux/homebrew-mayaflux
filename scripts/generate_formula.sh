@@ -145,7 +145,10 @@ class MayafluxDev < Formula
              "-o", stb_install_dir/header
     end
     
-    prefix.install Dir["*"]
+    bin.install Dir["bin/*"]
+    lib.install Dir["lib/*"]
+    share.install Dir["share/*"]
+    (prefix/"include").install Dir["include/*"]
     
     (prefix/"env.sh").write <<~SHELL
       # MayaFlux Environment Setup
