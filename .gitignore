@@ -1,0 +1,10 @@
+*.tar.gz
+*.zip
+.DS_Store
+*.swp
+*.swo
+pycache
+*.pyc
+.vscode/
+.idea/
+*.log
