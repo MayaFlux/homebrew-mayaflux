@@ -1,41 +1,25 @@
 name: Test Formula
 
 on:
-  # push:
-  #   branches: [ main ]
-  # pull_request:
-  #   branches: [ main ]
   workflow_dispatch:
+  push:
+    paths:
+      - "Formula/mayaflux-dev.rb"
+      - ".github/workflows/test-formula.yml"
 
 jobs:
   test-formula:
     runs-on: macos-14
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Homebrew (minimal)
-        run: |
-          echo "/opt/homebrew/bin" >> $GITHUB_PATH
-          echo "/opt/homebrew/sbin" >> $GITHUB_PATH
+      - name: Tap local formula
+        run: brew tap mayaflux/mayaflux ${{ github.workspace }}
 
-      - name: Test formula syntax
-        run: |
-          cd Formula
-          if ruby -c mayaflux-dev.rb; then
-            echo "✅ Formula syntax is valid"
-          else
-            echo "❌ Formula syntax error"
-            exit 1
-          fi
+      - name: Install mayaflux-dev
+        run: brew install mayaflux-dev
 
-      - name: Check formula content
+      - name: Verify installation
         run: |
-          echo "=== Formula Content Check ==="
-          cd Formula
-          grep -E "^(class|desc|homepage|url|sha256|depends_on)" mayaflux-dev.rb
-          echo ""
-          echo "=== Dependencies ==="
-          grep "depends_on" mayaflux-dev.rb | wc -l
-          echo "dependencies found"
+          ls -la /opt/homebrew/opt/mayaflux-dev/
+          echo "✅ Installation successful"
