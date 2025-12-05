@@ -1,36 +1,43 @@
 name: Update Formula
 
 on:
+  workflow_dispatch:
   repository_dispatch:
     types: [mayaflux-release]
-  workflow_dispatch:
 
 jobs:
   update-formula:
-    runs-on: ubuntu-latest
+    runs-on: macos-14
 
     steps:
-      - name: Checkout tap
+      - name: Checkout MayaFlux tap
         uses: actions/checkout@v4
         with:
           repository: MayaFlux/homebrew-mayaflux
-          token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup
         run: |
-          sudo apt-get update
-          sudo apt-get install -y curl jq
+          sudo apt-get update && sudo apt-get install -y curl jq ruby
 
-      - name: Run formula generator
+      - name: Generate formula
         run: |
           chmod +x ./scripts/generate_formula.sh
-          ./scripts/generate_formula.sh
+          GITHUB_TOKEN="${{ secrets.GITHUB_TOKEN }}" ./scripts/generate_formula.sh
 
-      - name: Test generated formula
+      - name: Verify formula
         run: |
           if [ -f "Formula/mayaflux-dev.rb" ]; then
-            echo "✅ Formula generated successfully"
+            echo "✅ Formula file exists"
             ruby -c Formula/mayaflux-dev.rb && echo "✅ Ruby syntax valid"
+            
+            grep -q "class MayafluxDev" Formula/mayaflux-dev.rb || exit 1
+            grep -q "desc" Formula/mayaflux-dev.rb || exit 1
+            grep -q "homepage" Formula/mayaflux-dev.rb || exit 1
+            grep -q "url" Formula/mayaflux-dev.rb || exit 1
+            grep -q "sha256" Formula/mayaflux-dev.rb || exit 1
+            
+            echo "✅ Formula structure is valid"
           else
             echo "❌ Formula file not found"
             exit 1
@@ -39,6 +46,5 @@ jobs:
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: "Update mayaflux-dev formula"
+          commit_message: "Update mayaflux-dev formula [skip ci]"
           file_pattern: Formula/mayaflux-dev.rb
-          repository: MayaFlux/homebrew-mayaflux

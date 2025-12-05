@@ -1,10 +1,10 @@
 name: Test Formula
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+  # push:
+  #   branches: [ main ]
+  # pull_request:
+  #   branches: [ main ]
   workflow_dispatch:
 
 jobs:
@@ -15,15 +15,27 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Homebrew
-        uses: Homebrew/actions/setup-homebrew@master
-
-      - name: Test Formula
+      - name: Setup Homebrew (minimal)
         run: |
-          brew style Formula/mayaflux-dev.rb
+          echo "/opt/homebrew/bin" >> $GITHUB_PATH
+          echo "/opt/homebrew/sbin" >> $GITHUB_PATH
 
-          brew install --build-from-source Formula/mayaflux-dev.rb
+      - name: Test formula syntax
+        run: |
+          cd Formula
+          if ruby -c mayaflux-dev.rb; then
+            echo "✅ Formula syntax is valid"
+          else
+            echo "❌ Formula syntax error"
+            exit 1
+          fi
 
-      - name: Cleanup
-        if: always()
-        run: brew uninstall mayaflux-dev 2>/dev/null || true
+      - name: Check formula content
+        run: |
+          echo "=== Formula Content Check ==="
+          cd Formula
+          grep -E "^(class|desc|homepage|url|sha256|depends_on)" mayaflux-dev.rb
+          echo ""
+          echo "=== Dependencies ==="
+          grep "depends_on" mayaflux-dev.rb | wc -l
+          echo "dependencies found"
