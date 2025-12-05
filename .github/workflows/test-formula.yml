@@ -2,10 +2,10 @@ name: Test Formula
 
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - "Formula/mayaflux-dev.rb"
-      - ".github/workflows/test-formula.yml"
+  # push:
+  #   paths:
+  #     - "Formula/mayaflux-dev.rb"
+  #     - ".github/workflows/test-formula.yml"
 
 jobs:
   test-formula:
