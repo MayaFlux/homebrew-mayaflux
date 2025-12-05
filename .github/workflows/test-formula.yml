@@ -1,0 +1,29 @@
+name: Test Formula
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  test-formula:
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - name: Test Formula
+        run: |
+          brew style Formula/mayaflux-dev.rb
+
+          brew install --build-from-source Formula/mayaflux-dev.rb
+
+      - name: Cleanup
+        if: always()
+        run: brew uninstall mayaflux-dev 2>/dev/null || true

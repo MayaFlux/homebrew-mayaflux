@@ -12,7 +12,7 @@ brew install mayaflux-dev
 
 ## What's Included
 
-mayaflux-dev: Development version of MayaFlux library
+`mayaflux-dev`: Development version of MayaFlux library
 
 ## Documentation
 

@@ -1,0 +1,44 @@
+name: Update Formula
+
+on:
+  repository_dispatch:
+    types: [mayaflux-release]
+  workflow_dispatch:
+
+jobs:
+  update-formula:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout tap
+        uses: actions/checkout@v4
+        with:
+          repository: MayaFlux/homebrew-mayaflux
+          token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+
+      - name: Setup
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y curl jq
+
+      - name: Run formula generator
+        run: |
+          chmod +x ./scripts/generate_formula.sh
+          ./scripts/generate_formula.sh
+
+      - name: Test generated formula
+        run: |
+          if [ -f "Formula/mayaflux-dev.rb" ]; then
+            echo "✅ Formula generated successfully"
+            ruby -c Formula/mayaflux-dev.rb && echo "✅ Ruby syntax valid"
+          else
+            echo "❌ Formula file not found"
+            exit 1
+          fi
+
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "Update mayaflux-dev formula"
+          file_pattern: Formula/mayaflux-dev.rb
+          repository: MayaFlux/homebrew-mayaflux
