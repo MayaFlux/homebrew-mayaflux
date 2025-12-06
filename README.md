@@ -4,7 +4,7 @@
 
 ```bash
 # Add this tap
-brew tap MayaFlux/mayaflux
+brew tap mayaflux/mayaflux
 
 # Install MayaFlux (development version)
 brew install mayaflux-dev
@@ -16,4 +16,6 @@ brew install mayaflux-dev
 
 ## Documentation
 
-See MayaFlux GitHub for more information.
+Visit the [Website](mayaflux.org) tutorials, examples, and guides.
+See MayaFlux [GitHub](https://github.com/MayaFlux/MayaFlux) for more information.
+Use [API Documentation](https://mayaflux.github.io/MayaFlux/) for reference.
