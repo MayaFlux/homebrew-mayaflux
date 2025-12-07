@@ -8,8 +8,16 @@ class MayafluxDev < Formula
   desc "Development version of MayaFlux - high-performance audio-visual computation library"
   homepage "https://github.com/MayaFlux/MayaFlux"
   version "0.1.0-dev"
-  url "https://github.com/MayaFlux/MayaFlux/releases/download/v0.1.0-dev/MayaFlux-0.1.0-dev-macos-arm64.tar.gz"
-  sha256 "2329888d37e91aefedd494d87f107ea2310e2c2ea8605ad10e6bfc347bb301c4"
+  
+  on_arm do
+    url "https://github.com/MayaFlux/MayaFlux/releases/download/v0.1.0-dev/MayaFlux-0.1.0-dev-macos-arm64.tar.gz"
+    sha256 "85c1560eb1b4a3a852c237fc127a688b43a6a77e88aee1ee170ae63ba9037d56"
+  end
+  
+  on_intel do
+    url "https://github.com/MayaFlux/MayaFlux/releases/download/v0.1.0-dev/MayaFlux-0.1.0-dev-macos-x64.tar.gz"
+    sha256 "3ef38da9edc3b45210bc3488de065671663a8062de7f77b013704c7629808031"
+  end
   
   depends_on "pkg-config"
   depends_on "llvm"

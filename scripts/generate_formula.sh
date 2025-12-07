@@ -8,6 +8,21 @@ cd "$REPO_ROOT"
 
 REPO="MayaFlux/MayaFlux"
 
+# Determine architecture
+ARCH=$(uname -m)
+if [[ "$ARCH" == "arm64" ]]; then
+    ARCH_NAME="arm64"
+    ASSET_PATTERN="macos-arm64"
+elif [[ "$ARCH" == "x86_64" ]]; then
+    ARCH_NAME="x64"
+    ASSET_PATTERN="macos-x64"
+else
+    echo "ERROR: Unsupported architecture: $ARCH"
+    exit 1
+fi
+
+echo "Detected architecture: $ARCH_NAME"
+
 API_URL="https://api.github.com/repos/$REPO/releases"
 AUTH_HEADER=""
 if [[ -n "${GITHUB_TOKEN:-}" ]]; then
@@ -41,7 +56,7 @@ if isinstance(data, list):
     data = data[0]
 for asset in data.get('assets', []):
     url = asset.get('browser_download_url', '')
-    if 'macos-arm64' in url and url.endswith('.tar.gz'):
+    if '$ASSET_PATTERN' in url and url.endswith('.tar.gz'):
         print(url)
         break
 " <<<"$RELEASE_JSON")
@@ -51,8 +66,8 @@ if [ -z "$ASSET_URL" ]; then
     CLEAN_TAG=${TAG#v}
 
     PATTERNS=(
-        "MayaFlux-${CLEAN_TAG}-macos-arm64.tar.gz"
-        "MayaFlux-${TAG}-macos-arm64.tar.gz"
+        "MayaFlux-${CLEAN_TAG}-${ASSET_PATTERN}.tar.gz"
+        "MayaFlux-${TAG}-${ASSET_PATTERN}.tar.gz"
     )
 
     for PATTERN in "${PATTERNS[@]}"; do
@@ -66,7 +81,7 @@ if [ -z "$ASSET_URL" ]; then
 fi
 
 if [ -z "$ASSET_URL" ]; then
-    echo "ERROR: Could not find download URL"
+    echo "ERROR: Could not find download URL for $ARCH_NAME"
     exit 1
 fi
 
@@ -101,8 +116,16 @@ class MayafluxDev < Formula
   desc "Development version of MayaFlux - high-performance audio-visual computation library"
   homepage "https://github.com/MayaFlux/MayaFlux"
   version "$VERSION"
-  url "$ASSET_URL"
-  sha256 "$SHA256"
+  
+  on_arm do
+    url "https://github.com/$REPO/releases/download/${TAG}/MayaFlux-${VERSION}-macos-arm64.tar.gz"
+    sha256 "ARM64_SHA256_PLACEHOLDER"
+  end
+  
+  on_intel do
+    url "https://github.com/$REPO/releases/download/${TAG}/MayaFlux-${VERSION}-macos-x64.tar.gz"
+    sha256 "INTEL_SHA256_PLACEHOLDER"
+  end
   
   depends_on "pkg-config"
   depends_on "llvm"
@@ -194,5 +217,31 @@ class MayafluxDev < Formula
 end
 RUBY
 
+echo ""
+echo "Fetching SHA256 for both architectures..."
+
+# Fetch ARM64 SHA
+ARM_URL="https://github.com/$REPO/releases/download/${TAG}/MayaFlux-${VERSION}-macos-arm64.tar.gz"
+echo "Downloading ARM64 asset..."
+ARM_TEMP=$(mktemp)
+curl -fL --progress-bar "$ARM_URL" -o "$ARM_TEMP"
+ARM_SHA=$(shasum -a 256 "$ARM_TEMP" | awk '{print $1}')
+rm -f "$ARM_TEMP"
+echo "ARM64 SHA256: $ARM_SHA"
+
+# Fetch Intel SHA
+INTEL_URL="https://github.com/$REPO/releases/download/${TAG}/MayaFlux-${VERSION}-macos-x64.tar.gz"
+echo "Downloading Intel asset..."
+INTEL_TEMP=$(mktemp)
+curl -fL --progress-bar "$INTEL_URL" -o "$INTEL_TEMP"
+INTEL_SHA=$(shasum -a 256 "$INTEL_TEMP" | awk '{print $1}')
+rm -f "$INTEL_TEMP"
+echo "Intel SHA256: $INTEL_SHA"
+
+sed -i '' "s/ARM64_SHA256_PLACEHOLDER/$ARM_SHA/g" Formula/mayaflux-dev.rb
+sed -i '' "s/INTEL_SHA256_PLACEHOLDER/$INTEL_SHA/g" Formula/mayaflux-dev.rb
+
+echo ""
 echo "✅ Formula generated for MayaFlux version $VERSION"
-echo "📦 SHA256: $SHA256"
+echo "📦 ARM64 SHA256: $ARM_SHA"
+echo "📦 Intel SHA256: $INTEL_SHA"
