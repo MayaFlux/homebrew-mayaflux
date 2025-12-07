@@ -187,7 +187,9 @@ class MayafluxDev < Formula
       export Clang_DIR="\\\$LLVM_PREFIX/lib/cmake/clang"
       export CMAKE_PREFIX_PATH="\\\$LLVM_PREFIX/lib/cmake:\\\$CMAKE_PREFIX_PATH"
       
-      if [ -f "#{Formula["molten-vk"].opt_prefix}/etc/vulkan/icd.d/MoltenVK_icd.json" ]; then
+      if [ -f "#{Formula["molten-vk"].opt_prefix}/share/vulkan/icd.d/MoltenVK_icd.json" ]; then
+        export VK_ICD_FILENAMES="#{Formula["molten-vk"].opt_prefix}/share/vulkan/icd.d/MoltenVK_icd.json"
+      elif [ -f "#{Formula["molten-vk"].opt_prefix}/etc/vulkan/icd.d/MoltenVK_icd.json" ]; then
         export VK_ICD_FILENAMES="#{Formula["molten-vk"].opt_prefix}/etc/vulkan/icd.d/MoltenVK_icd.json"
       fi
     SHELL
