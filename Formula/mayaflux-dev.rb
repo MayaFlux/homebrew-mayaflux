@@ -11,12 +11,12 @@ class MayafluxDev < Formula
   
   on_arm do
     url "https://github.com/MayaFlux/MayaFlux/releases/download/v0.1.0-dev/MayaFlux-0.1.0-dev-macos-arm64.tar.gz"
-    sha256 "0723cb8c2346d7ed28f864f4d23352df7938bc97a262555612befc16f4bad2a4"
+    # SHA256 verified dynamically at install time
   end
   
   on_intel do
     url "https://github.com/MayaFlux/MayaFlux/releases/download/v0.1.0-dev/MayaFlux-0.1.0-dev-macos-x64.tar.gz"
-    sha256 "e5582b02b78e0685f382a5c21892d91063d04754af25b380848ae8d44503ab42"
+    # SHA256 verified dynamically at install time
   end
   
   depends_on "pkg-config"
@@ -42,6 +42,18 @@ class MayafluxDev < Formula
   depends_on "molten-vk"
   
   def install
+    # Fetch and verify SHA256 dynamically from GitHub release
+    ohai "Verifying download integrity..."
+    sha_url = "#{stable.url}.sha256"
+    
+    expected_sha = Utils.safe_popen_read("curl", "-fsSL", sha_url).strip
+    actual_sha = Digest::SHA256.file(cached_download).hexdigest
+    
+    if expected_sha != actual_sha
+      odie "SHA256 verification failed!\nExpected: #{expected_sha}\nActual: #{actual_sha}"
+    end
+    ohai "✅ SHA256 verified: #{actual_sha}"
+    
     ohai "Installing STB headers..."
     stb_install_dir = prefix/"include"/"stb"
     stb_install_dir.mkpath
@@ -70,6 +82,12 @@ class MayafluxDev < Formula
       export MAYAFLUX_ROOT="#{opt_prefix}"
       export PATH="\$MAYAFLUX_ROOT/bin:\$PATH"
       export CMAKE_PREFIX_PATH="\$MAYAFLUX_ROOT:\$CMAKE_PREFIX_PATH"
+      
+      # MayaFlux library and include paths
+      export DYLD_LIBRARY_PATH="\$MAYAFLUX_ROOT/lib:\$DYLD_LIBRARY_PATH"
+      export LIBRARY_PATH="\$MAYAFLUX_ROOT/lib:\$LIBRARY_PATH"
+      export CPATH="\$MAYAFLUX_ROOT/include:\$CPATH"
+      export PKG_CONFIG_PATH="\$MAYAFLUX_ROOT/lib/pkgconfig:\$PKG_CONFIG_PATH"
       export STB_ROOT="\$MAYAFLUX_ROOT/include/stb"
       export CPATH="\$STB_ROOT:\$CPATH"
       

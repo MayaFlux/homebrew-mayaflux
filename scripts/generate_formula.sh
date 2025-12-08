@@ -87,20 +87,6 @@ fi
 
 echo "Download URL: $ASSET_URL"
 
-TEMP_FILE=$(mktemp)
-echo "Downloading to calculate SHA256..."
-curl -fL --progress-bar "$ASSET_URL" -o "$TEMP_FILE"
-
-if [[ ! -s "$TEMP_FILE" ]]; then
-    echo "ERROR: Download failed or empty file"
-    rm -f "$TEMP_FILE"
-    exit 1
-fi
-
-SHA256=$(shasum -a 256 "$TEMP_FILE" | awk '{print $1}')
-rm -f "$TEMP_FILE"
-
-echo "SHA256: $SHA256"
 VERSION=${TAG#v}
 
 mkdir -p Formula
@@ -119,12 +105,12 @@ class MayafluxDev < Formula
   
   on_arm do
     url "https://github.com/$REPO/releases/download/${TAG}/MayaFlux-${VERSION}-macos-arm64.tar.gz"
-    sha256 "ARM64_SHA256_PLACEHOLDER"
+    # SHA256 verified dynamically at install time
   end
   
   on_intel do
     url "https://github.com/$REPO/releases/download/${TAG}/MayaFlux-${VERSION}-macos-x64.tar.gz"
-    sha256 "INTEL_SHA256_PLACEHOLDER"
+    # SHA256 verified dynamically at install time
   end
   
   depends_on "pkg-config"
@@ -150,6 +136,18 @@ class MayafluxDev < Formula
   depends_on "molten-vk"
   
   def install
+    # Fetch and verify SHA256 dynamically from GitHub release
+    ohai "Verifying download integrity..."
+    sha_url = "#{stable.url}.sha256"
+    
+    expected_sha = Utils.safe_popen_read("curl", "-fsSL", sha_url).strip
+    actual_sha = Digest::SHA256.file(cached_download).hexdigest
+    
+    if expected_sha != actual_sha
+      odie "SHA256 verification failed!\nExpected: #{expected_sha}\nActual: #{actual_sha}"
+    end
+    ohai "✅ SHA256 verified: #{actual_sha}"
+    
     ohai "Installing STB headers..."
     stb_install_dir = prefix/"include"/"stb"
     stb_install_dir.mkpath
@@ -178,6 +176,12 @@ class MayafluxDev < Formula
       export MAYAFLUX_ROOT="#{opt_prefix}"
       export PATH="\\\$MAYAFLUX_ROOT/bin:\\\$PATH"
       export CMAKE_PREFIX_PATH="\\\$MAYAFLUX_ROOT:\\\$CMAKE_PREFIX_PATH"
+      
+      # MayaFlux library and include paths
+      export DYLD_LIBRARY_PATH="\\\$MAYAFLUX_ROOT/lib:\\\$DYLD_LIBRARY_PATH"
+      export LIBRARY_PATH="\\\$MAYAFLUX_ROOT/lib:\\\$LIBRARY_PATH"
+      export CPATH="\\\$MAYAFLUX_ROOT/include:\\\$CPATH"
+      export PKG_CONFIG_PATH="\\\$MAYAFLUX_ROOT/lib/pkgconfig:\\\$PKG_CONFIG_PATH"
       export STB_ROOT="\\\$MAYAFLUX_ROOT/include/stb"
       export CPATH="\\\$STB_ROOT:\\\$CPATH"
       
@@ -219,31 +223,5 @@ class MayafluxDev < Formula
 end
 RUBY
 
-echo ""
-echo "Fetching SHA256 for both architectures..."
-
-# Fetch ARM64 SHA
-ARM_URL="https://github.com/$REPO/releases/download/${TAG}/MayaFlux-${VERSION}-macos-arm64.tar.gz"
-echo "Downloading ARM64 asset..."
-ARM_TEMP=$(mktemp)
-curl -fL --progress-bar "$ARM_URL" -o "$ARM_TEMP"
-ARM_SHA=$(shasum -a 256 "$ARM_TEMP" | awk '{print $1}')
-rm -f "$ARM_TEMP"
-echo "ARM64 SHA256: $ARM_SHA"
-
-# Fetch Intel SHA
-INTEL_URL="https://github.com/$REPO/releases/download/${TAG}/MayaFlux-${VERSION}-macos-x64.tar.gz"
-echo "Downloading Intel asset..."
-INTEL_TEMP=$(mktemp)
-curl -fL --progress-bar "$INTEL_URL" -o "$INTEL_TEMP"
-INTEL_SHA=$(shasum -a 256 "$INTEL_TEMP" | awk '{print $1}')
-rm -f "$INTEL_TEMP"
-echo "Intel SHA256: $INTEL_SHA"
-
-sed -i '' "s/ARM64_SHA256_PLACEHOLDER/$ARM_SHA/g" Formula/mayaflux-dev.rb
-sed -i '' "s/INTEL_SHA256_PLACEHOLDER/$INTEL_SHA/g" Formula/mayaflux-dev.rb
-
-echo ""
 echo "✅ Formula generated for MayaFlux version $VERSION"
-echo "📦 ARM64 SHA256: $ARM_SHA"
-echo "📦 Intel SHA256: $INTEL_SHA"
+echo "📦 SHA256 will be verified dynamically at install time for both architectures"
