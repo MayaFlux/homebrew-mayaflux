@@ -11,12 +11,12 @@ class MayafluxDev < Formula
   
   on_arm do
     url "https://github.com/MayaFlux/MayaFlux/releases/download/v0.1.0-dev/MayaFlux-0.1.0-dev-macos-arm64.tar.gz"
-    sha256 "85c1560eb1b4a3a852c237fc127a688b43a6a77e88aee1ee170ae63ba9037d56"
+    sha256 "0723cb8c2346d7ed28f864f4d23352df7938bc97a262555612befc16f4bad2a4"
   end
   
   on_intel do
     url "https://github.com/MayaFlux/MayaFlux/releases/download/v0.1.0-dev/MayaFlux-0.1.0-dev-macos-x64.tar.gz"
-    sha256 "3ef38da9edc3b45210bc3488de065671663a8062de7f77b013704c7629808031"
+    sha256 "e5582b02b78e0685f382a5c21892d91063d04754af25b380848ae8d44503ab42"
   end
   
   depends_on "pkg-config"
