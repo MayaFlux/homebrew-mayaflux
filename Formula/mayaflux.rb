@@ -1,22 +1,18 @@
 # typed: false
 # frozen_string_literal: true
 
-license "GPL-3.0-or-later"
-conflicts_with "mayaflux", because: "both install MayaFlux binaries"
-
-class MayafluxDev < Formula
-  desc "Development version of MayaFlux - high-performance audio-visual computation library"
+class Mayaflux < Formula
+  desc "Modern C++23 framework for real-time graphics and audio with JIT live coding"
   homepage "https://github.com/MayaFlux/MayaFlux"
-  version "0.1.0-dev"
+  version "0.1.0"
+  license "GPL-3.0-or-later"
   
   on_arm do
-    url "https://github.com/MayaFlux/MayaFlux/releases/download/v0.1.0-dev/MayaFlux-0.1.0-dev-macos-arm64.tar.gz"
-    # SHA256 verified dynamically at install time
+    url "https://github.com/MayaFlux/MayaFlux/releases/download/v#{version}/MayaFlux-#{version}-macos-arm64.tar.gz"
   end
   
   on_intel do
-    url "https://github.com/MayaFlux/MayaFlux/releases/download/v0.1.0-dev/MayaFlux-0.1.0-dev-macos-x64.tar.gz"
-    # SHA256 verified dynamically at install time
+    url "https://github.com/MayaFlux/MayaFlux/releases/download/v#{version}/MayaFlux-#{version}-macos-x64.tar.gz"
   end
   
   depends_on "pkg-config"
@@ -41,8 +37,9 @@ class MayafluxDev < Formula
   depends_on "glslang"
   depends_on "molten-vk"
   
+  conflicts_with "mayaflux-dev", because: "both install MayaFlux binaries"
+  
   def install
-    # Fetch and verify SHA256 dynamically from GitHub release
     ohai "Verifying download integrity..."
     sha_url = "#{stable.url}.sha256"
     
@@ -52,7 +49,7 @@ class MayafluxDev < Formula
     if expected_sha != actual_sha
       odie "SHA256 verification failed!\nExpected: #{expected_sha}\nActual: #{actual_sha}"
     end
-    ohai "✅ SHA256 verified: #{actual_sha}"
+    ohai "SHA256 verified: #{actual_sha}"
     
     ohai "Installing STB headers..."
     stb_install_dir = prefix/"include"/"stb"
@@ -117,13 +114,15 @@ class MayafluxDev < Formula
       
       Or run manually:
         source #{opt_prefix}/env.sh
+      
+      Documentation: https://github.com/MayaFlux/MayaFlux
     EOS
   end
   
   test do
     assert_predicate prefix/".version", :exist?
-    assert_match version.to_s, (prefix/".version").read if (prefix/".version").exist?
-    
+    assert_match version.to_s, (prefix/".version").read
     assert_predicate prefix/"include"/"stb"/"stb_image.h", :exist?
+    assert_predicate bin/"lila_server", :exist?
   end
 end
