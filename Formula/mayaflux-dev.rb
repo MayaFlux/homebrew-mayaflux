@@ -4,19 +4,17 @@
 class MayafluxDev < Formula
   desc "Development version of MayaFlux - high-performance audio-visual computation library"
   homepage "https://github.com/MayaFlux/MayaFlux"
-  version "0.1.0-dev"
+  version "0.1.1-dev"
   license "GPL-3.0-or-later"
   conflicts_with "mayaflux", because: "both install MayaFlux binaries"
 
   
   on_arm do
-    url "https://github.com/MayaFlux/MayaFlux/releases/download/v0.1.0-dev/MayaFlux-0.1.0-dev-macos-arm64.tar.gz"
-    # SHA256 verified dynamically at install time
+    url "https://github.com/MayaFlux/MayaFlux/releases/download/v#{version}/MayaFlux-#{version}-macos-arm64.tar.gz"
   end
   
   on_intel do
-    url "https://github.com/MayaFlux/MayaFlux/releases/download/v0.1.0-dev/MayaFlux-0.1.0-dev-macos-x64.tar.gz"
-    # SHA256 verified dynamically at install time
+    url "https://github.com/MayaFlux/MayaFlux/releases/download/v#{version}/MayaFlux-#{version}-macos-x64.tar.gz"
   end
   
   depends_on "pkg-config"
