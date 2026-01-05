@@ -106,6 +106,9 @@ class MayafluxDev < Formula
 
       VULKAN_LOADER_PREFIX="#{Formula["vulkan-loader"].opt_prefix}"
       export DYLD_LIBRARY_PATH="\$VULKAN_LOADER_PREFIX/lib:\$DYLD_LIBRARY_PATH"
+
+      VULKAN_LAYERS_PREFIX="#{Formula["vulkan-validationlayers"].opt_prefix}"
+      export VK_LAYER_PATH="\$VULKAN_LAYERS_PREFIX/share/vulkan/explicit_layer.d"
     SHELL
     
     (prefix/".version").write(version.to_s)
