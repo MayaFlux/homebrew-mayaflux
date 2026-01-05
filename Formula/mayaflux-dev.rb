@@ -100,6 +100,12 @@ class MayafluxDev < Formula
       elif [ -f "#{Formula["molten-vk"].opt_prefix}/etc/vulkan/icd.d/MoltenVK_icd.json" ]; then
         export VK_ICD_FILENAMES="#{Formula["molten-vk"].opt_prefix}/etc/vulkan/icd.d/MoltenVK_icd.json"
       fi
+
+      MOLTENVK_PREFIX="#{Formula["molten-vk"].opt_prefix}"
+      export DYLD_LIBRARY_PATH="\$MOLTENVK_PREFIX/lib:\$DYLD_LIBRARY_PATH"
+
+      VULKAN_LOADER_PREFIX="#{Formula["vulkan-loader"].opt_prefix}"
+      export DYLD_LIBRARY_PATH="\$VULKAN_LOADER_PREFIX/lib:\$DYLD_LIBRARY_PATH"
     SHELL
     
     (prefix/".version").write(version.to_s)
