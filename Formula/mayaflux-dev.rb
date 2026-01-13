@@ -60,15 +60,9 @@ class MayafluxDev < Formula
     
     (prefix/"env.sh").write <<~SHELL
       # MayaFlux Environment Setup
-      export MAYAFLUX_ROOT="#{opt_prefix}"
-      export PATH="\$MAYAFLUX_ROOT/bin:\$PATH"
-      export CMAKE_PREFIX_PATH="\$MAYAFLUX_ROOT:\$CMAKE_PREFIX_PATH"
-      
-      # MayaFlux library and include paths
-      export DYLD_LIBRARY_PATH="\$MAYAFLUX_ROOT/lib:\$DYLD_LIBRARY_PATH"
-      export LIBRARY_PATH="\$MAYAFLUX_ROOT/lib:\$LIBRARY_PATH"
-      export CPATH="\$MAYAFLUX_ROOT/include:\$CPATH"
-      export PKG_CONFIG_PATH="\$MAYAFLUX_ROOT/lib/pkgconfig:\$PKG_CONFIG_PATH"
+
+      # For CMake template MAYAFLUX_ROOT detection only
+      export MAYAFLUX_ROOT="#{HOMEBREW_PREFIX}"
 
       # STB Pathing
       export STB_ROOT="#{Formula["stb"].opt_include}/stb"
@@ -87,13 +81,11 @@ class MayafluxDev < Formula
       fi
 
       MOLTENVK_PREFIX="#{Formula["molten-vk"].opt_prefix}"
-      export DYLD_LIBRARY_PATH="\$MOLTENVK_PREFIX/lib:\$DYLD_LIBRARY_PATH"
-
       VULKAN_LOADER_PREFIX="#{Formula["vulkan-loader"].opt_prefix}"
-      export DYLD_LIBRARY_PATH="\$VULKAN_LOADER_PREFIX/lib:\$DYLD_LIBRARY_PATH"
-
       VULKAN_LAYERS_PREFIX="#{Formula["vulkan-validationlayers"].opt_prefix}"
       export VK_LAYER_PATH="\$VULKAN_LAYERS_PREFIX/share/vulkan/explicit_layer.d"
+
+      export DYLD_LIBRARY_PATH="\$MOLTENVK_PREFIX/lib:\$VULKAN_LOADER_PREFIX/lib:\$DYLD_LIBRARY_PATH"
     SHELL
     
     (prefix/".version").write(version.to_s)
