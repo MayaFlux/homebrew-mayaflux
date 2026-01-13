@@ -38,6 +38,7 @@ class MayafluxDev < Formula
   depends_on "shaderc"
   depends_on "glslang"
   depends_on "molten-vk"
+  depends_on "mayaflux/mayaflux/stb"
   
   def install
     # Fetch and verify SHA256 dynamically from GitHub release
@@ -51,24 +52,6 @@ class MayafluxDev < Formula
       odie "SHA256 verification failed!\nExpected: #{expected_sha}\nActual: #{actual_sha}"
     end
     ohai "✅ SHA256 verified: #{actual_sha}"
-    
-    ohai "Installing STB headers..."
-    stb_install_dir = prefix/"include"/"stb"
-    stb_install_dir.mkpath
-    
-    stb_headers = [
-      "stb_image.h",
-      "stb_image_write.h",
-      "stb_image_resize2.h",
-      "stb_truetype.h",
-      "stb_rect_pack.h"
-    ]
-    
-    stb_headers.each do |header|
-      system "curl", "-fL", 
-             "https://raw.githubusercontent.com/nothings/stb/master/#{header}",
-             "-o", stb_install_dir/header
-    end
     
     bin.install Dir["bin/*"]
     lib.install Dir["lib/*"]
@@ -86,7 +69,9 @@ class MayafluxDev < Formula
       export LIBRARY_PATH="\$MAYAFLUX_ROOT/lib:\$LIBRARY_PATH"
       export CPATH="\$MAYAFLUX_ROOT/include:\$CPATH"
       export PKG_CONFIG_PATH="\$MAYAFLUX_ROOT/lib/pkgconfig:\$PKG_CONFIG_PATH"
-      export STB_ROOT="\$MAYAFLUX_ROOT/include/stb"
+
+      # STB Pathing
+      export STB_ROOT="#{Formula["stb"].opt_include}/stb"
       export CPATH="\$STB_ROOT:\$CPATH"
       
       LLVM_PREFIX="#{Formula["llvm"].opt_prefix}"
@@ -130,7 +115,5 @@ class MayafluxDev < Formula
   test do
     assert_predicate prefix/".version", :exist?
     assert_match version.to_s, (prefix/".version").read if (prefix/".version").exist?
-    
-    assert_predicate prefix/"include"/"stb"/"stb_image.h", :exist?
   end
 end
