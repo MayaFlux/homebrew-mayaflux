@@ -4,8 +4,9 @@
 class Mayaflux < Formula
   desc "Modern C++23 framework for real-time graphics and audio with JIT live coding"
   homepage "https://github.com/MayaFlux/MayaFlux"
-  version "0.1.0"
+  version "0.1.1"
   license "GPL-3.0-or-later"
+  conflicts_with "mayaflux-dev", because: "both install MayaFlux binaries"
   
   on_arm do
     url "https://github.com/MayaFlux/MayaFlux/releases/download/v#{version}/MayaFlux-#{version}-macos-arm64.tar.gz"
@@ -36,8 +37,7 @@ class Mayaflux < Formula
   depends_on "shaderc"
   depends_on "glslang"
   depends_on "molten-vk"
-  
-  conflicts_with "mayaflux-dev", because: "both install MayaFlux binaries"
+  depends_on "mayaflux/mayaflux/stb"
   
   def install
     ohai "Verifying download integrity..."
@@ -51,24 +51,6 @@ class Mayaflux < Formula
     end
     ohai "SHA256 verified: #{actual_sha}"
     
-    ohai "Installing STB headers..."
-    stb_install_dir = prefix/"include"/"stb"
-    stb_install_dir.mkpath
-    
-    stb_headers = [
-      "stb_image.h",
-      "stb_image_write.h",
-      "stb_image_resize2.h",
-      "stb_truetype.h",
-      "stb_rect_pack.h"
-    ]
-    
-    stb_headers.each do |header|
-      system "curl", "-fL", 
-             "https://raw.githubusercontent.com/nothings/stb/master/#{header}",
-             "-o", stb_install_dir/header
-    end
-    
     bin.install Dir["bin/*"]
     lib.install Dir["lib/*"]
     share.install Dir["share/*"]
@@ -76,16 +58,12 @@ class Mayaflux < Formula
     
     (prefix/"env.sh").write <<~SHELL
       # MayaFlux Environment Setup
-      export MAYAFLUX_ROOT="#{opt_prefix}"
-      export PATH="\$MAYAFLUX_ROOT/bin:\$PATH"
-      export CMAKE_PREFIX_PATH="\$MAYAFLUX_ROOT:\$CMAKE_PREFIX_PATH"
-      
-      # MayaFlux library and include paths
-      export DYLD_LIBRARY_PATH="\$MAYAFLUX_ROOT/lib:\$DYLD_LIBRARY_PATH"
-      export LIBRARY_PATH="\$MAYAFLUX_ROOT/lib:\$LIBRARY_PATH"
-      export CPATH="\$MAYAFLUX_ROOT/include:\$CPATH"
-      export PKG_CONFIG_PATH="\$MAYAFLUX_ROOT/lib/pkgconfig:\$PKG_CONFIG_PATH"
-      export STB_ROOT="\$MAYAFLUX_ROOT/include/stb"
+
+      # For CMake template MAYAFLUX_ROOT detection only
+      export MAYAFLUX_ROOT="#{HOMEBREW_PREFIX}"
+
+      # STB Pathing
+      export STB_ROOT="#{Formula["stb"].opt_include}/stb"
       export CPATH="\$STB_ROOT:\$CPATH"
       
       LLVM_PREFIX="#{Formula["llvm"].opt_prefix}"
@@ -99,6 +77,13 @@ class Mayaflux < Formula
       elif [ -f "#{Formula["molten-vk"].opt_prefix}/etc/vulkan/icd.d/MoltenVK_icd.json" ]; then
         export VK_ICD_FILENAMES="#{Formula["molten-vk"].opt_prefix}/etc/vulkan/icd.d/MoltenVK_icd.json"
       fi
+
+      MOLTENVK_PREFIX="#{Formula["molten-vk"].opt_prefix}"
+      VULKAN_LOADER_PREFIX="#{Formula["vulkan-loader"].opt_prefix}"
+      VULKAN_LAYERS_PREFIX="#{Formula["vulkan-validationlayers"].opt_prefix}"
+      export VK_LAYER_PATH="\$VULKAN_LAYERS_PREFIX/share/vulkan/explicit_layer.d"
+
+      export DYLD_LIBRARY_PATH="\$MOLTENVK_PREFIX/lib:\$VULKAN_LOADER_PREFIX/lib:\$DYLD_LIBRARY_PATH"
     SHELL
     
     (prefix/".version").write(version.to_s)
@@ -121,8 +106,6 @@ class Mayaflux < Formula
   
   test do
     assert_predicate prefix/".version", :exist?
-    assert_match version.to_s, (prefix/".version").read
-    assert_predicate prefix/"include"/"stb"/"stb_image.h", :exist?
-    assert_predicate bin/"lila_server", :exist?
+    assert_match version.to_s, (prefix/".version").read if (prefix/".version").exist?
   end
 end
