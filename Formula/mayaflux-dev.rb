@@ -38,6 +38,7 @@ class MayafluxDev < Formula
   depends_on "shaderc"
   depends_on "glslang"
   depends_on "molten-vk"
+  depends_on "hidapi"
   depends_on "mayaflux/mayaflux/stb"
   
   def install
