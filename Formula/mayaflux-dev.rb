@@ -40,6 +40,9 @@ class MayafluxDev < Formula
   depends_on "molten-vk"
   depends_on "hidapi"
   depends_on "rtmidi"
+  depends_on "asio"
+  depends_on "freetype"
+  depends_on "utf8proc"
   depends_on "mayaflux/mayaflux/stb"
   
   def install
