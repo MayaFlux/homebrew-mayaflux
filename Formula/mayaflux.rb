@@ -67,9 +67,7 @@ class Mayaflux < Formula
       # For CMake template MAYAFLUX_ROOT detection only
       export MAYAFLUX_ROOT="#{HOMEBREW_PREFIX}"
 
-      # STB Pathing
-      export STB_ROOT="#{Formula["stb"].opt_include}/stb"
-      export CPATH="\$STB_ROOT:\$CPATH"
+      export CPATH="#{HOMEBREW_PREFIX}/include:\$CPATH"
       
       LLVM_PREFIX="#{Formula["llvm"].opt_prefix}"
       export PATH="\$LLVM_PREFIX/bin:\$PATH"
