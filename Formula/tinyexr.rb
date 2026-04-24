@@ -6,6 +6,8 @@ class Tinyexr < Formula
 
   def install
     include.install "tinyexr.h"
+    include.install "exr_reader.hh"
+    include.install "streamreader.hh"
     include.install "deps/miniz/miniz.h"
     include.install "deps/miniz/miniz.c"
 
