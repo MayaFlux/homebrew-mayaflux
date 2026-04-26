@@ -43,6 +43,7 @@ class MayafluxDev < Formula
   depends_on "asio"
   depends_on "freetype"
   depends_on "utf8proc"
+  depends_on "nlohmann-json"
   depends_on "mayaflux/mayaflux/stb"
   
   def install
