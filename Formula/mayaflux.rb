@@ -4,7 +4,7 @@
 class Mayaflux < Formula
   desc "Modern C++23 framework for real-time graphics and audio with JIT live coding"
   homepage "https://github.com/MayaFlux/MayaFlux"
-  version "0.3.2"
+  version "0.3.3"
   license "GPL-3.0-or-later"
   conflicts_with "mayaflux-dev", because: "both install MayaFlux binaries"
   
