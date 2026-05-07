@@ -4,7 +4,7 @@
 class Mayaflux < Formula
   desc "Modern C++23 framework for real-time graphics and audio with JIT live coding"
   homepage "https://github.com/MayaFlux/MayaFlux"
-  version "0.3.3"
+  version "0.3.4"
   license "GPL-3.0-or-later"
   conflicts_with "mayaflux-dev", because: "both install MayaFlux binaries"
   
@@ -42,6 +42,7 @@ class Mayaflux < Formula
   depends_on "asio"
   depends_on "freetype"
   depends_on "utf8proc"
+  depends_on "assimp"
   depends_on "mayaflux/mayaflux/stb"
   
   def install
