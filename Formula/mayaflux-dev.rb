@@ -24,7 +24,6 @@ class MayafluxDev < Formula
   depends_on "glm"
   depends_on "eigen"
   depends_on "fmt"
-  depends_on "magic_enum"
   depends_on "onedpl"
   depends_on "googletest"
   depends_on "vulkan-headers"
