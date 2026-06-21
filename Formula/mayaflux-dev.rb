@@ -4,7 +4,7 @@
 class MayafluxDev < Formula
   desc "Development version of MayaFlux - high-performance audio-visual computation library"
   homepage "https://github.com/MayaFlux/MayaFlux"
-  version "0.4.0-dev"
+  version "0.5.0-dev"
   license "GPL-3.0-or-later"
   conflicts_with "mayaflux", because: "both install MayaFlux binaries"
   
@@ -22,7 +22,6 @@ class MayafluxDev < Formula
   depends_on "glfw"
   depends_on "glm"
   depends_on "eigen"
-  depends_on "fmt"
   depends_on "onedpl"
   depends_on "googletest"
   depends_on "vulkan-headers"
