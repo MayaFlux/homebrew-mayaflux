@@ -4,7 +4,7 @@
 class Mayaflux < Formula
   desc "Modern C++23 framework for real-time graphics and audio with JIT live coding"
   homepage "https://github.com/MayaFlux/MayaFlux"
-  version "0.3.4"
+  version "0.4.0"
   license "GPL-3.0-or-later"
   conflicts_with "mayaflux-dev", because: "both install MayaFlux binaries"
   
@@ -19,12 +19,10 @@ class Mayaflux < Formula
   depends_on "pkg-config"
   depends_on "llvm"
   depends_on "ffmpeg"
-  depends_on "rtaudio"
   depends_on "glfw"
   depends_on "glm"
   depends_on "eigen"
   depends_on "fmt"
-  depends_on "magic_enum"
   depends_on "onedpl"
   depends_on "googletest"
   depends_on "vulkan-headers"
@@ -38,11 +36,11 @@ class Mayaflux < Formula
   depends_on "glslang"
   depends_on "molten-vk"
   depends_on "hidapi"
-  depends_on "rtmidi"
   depends_on "asio"
   depends_on "freetype"
   depends_on "utf8proc"
   depends_on "assimp"
+  depends_on "nlohmann-json"
   depends_on "mayaflux/mayaflux/stb"
   
   def install

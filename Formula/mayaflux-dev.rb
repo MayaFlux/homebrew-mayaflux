@@ -7,7 +7,6 @@ class MayafluxDev < Formula
   version "0.4.0-dev"
   license "GPL-3.0-or-later"
   conflicts_with "mayaflux", because: "both install MayaFlux binaries"
-
   
   on_arm do
     url "https://github.com/MayaFlux/MayaFlux/releases/download/v#{version}/MayaFlux-#{version}-macos-arm64.tar.gz"
