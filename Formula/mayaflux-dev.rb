@@ -5,7 +5,7 @@ class MayafluxDev < Formula
   desc "Development version of MayaFlux - high-performance audio-visual computation library"
   homepage "https://github.com/MayaFlux/MayaFlux"
   version "0.5.0-dev"
-  license "GPL-3.0-or-later"
+  license all_of: ["GPL-3.0-or-later", "Apache-2.0", "BSD-3-Clause", "MIT"]
   conflicts_with "mayaflux", because: "both install MayaFlux binaries"
   
   on_arm do
