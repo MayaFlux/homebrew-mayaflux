@@ -19,6 +19,8 @@ class MayafluxDev < Formula
   depends_on "pkg-config"
   depends_on "llvm"
   depends_on "ffmpeg"
+  depends_on "assimp"
+  depends_on "alembic"
   depends_on "glfw"
   depends_on "glm"
   depends_on "eigen"
