@@ -8,20 +8,7 @@ cd "$REPO_ROOT"
 
 REPO="MayaFlux/MayaFlux"
 
-# Determine architecture
-ARCH=$(uname -m)
-if [[ "$ARCH" == "arm64" ]]; then
-    ARCH_NAME="arm64"
-    ASSET_PATTERN="macos-arm64"
-elif [[ "$ARCH" == "x86_64" ]]; then
-    ARCH_NAME="x64"
-    ASSET_PATTERN="macos-x64"
-else
-    echo "ERROR: Unsupported architecture: $ARCH"
-    exit 1
-fi
-
-echo "Detected architecture: $ARCH_NAME"
+ASSET_PATTERN="macos-arm64"
 
 API_URL="https://api.github.com/repos/$REPO/releases"
 AUTH_HEADER=""
@@ -81,7 +68,7 @@ if [ -z "$ASSET_URL" ]; then
 fi
 
 if [ -z "$ASSET_URL" ]; then
-    echo "ERROR: Could not find download URL for $ARCH_NAME"
+    echo "ERROR: Could not find download URL for macOS ARM64"
     exit 1
 fi
 
@@ -103,26 +90,20 @@ class MayafluxDev < Formula
   homepage "https://github.com/MayaFlux/MayaFlux"
   version "$VERSION"
   
-  on_arm do
-    url "https://github.com/$REPO/releases/download/${TAG}/MayaFlux-${VERSION}-macos-arm64.tar.gz"
-    # SHA256 verified dynamically at install time
-  end
-  
-  on_intel do
-    url "https://github.com/$REPO/releases/download/${TAG}/MayaFlux-${VERSION}-macos-x64.tar.gz"
-    # SHA256 verified dynamically at install time
-  end
+  url "https://github.com/$REPO/releases/download/${TAG}/MayaFlux-${VERSION}-macos-arm64.tar.gz"
+  # SHA256 verified dynamically at install time
+
+  depends_on :macos
+  depends_on arch: :arm64
   
   depends_on "pkg-config"
   depends_on "llvm"
   depends_on "ffmpeg"
   depends_on "rtaudio"
-  depends_on "glfw"
   depends_on "glm"
   depends_on "eigen"
   depends_on "fmt"
   depends_on "magic_enum"
-  depends_on "onedpl"
   depends_on "googletest"
   depends_on "vulkan-headers"
   depends_on "vulkan-loader"
@@ -224,4 +205,4 @@ end
 RUBY
 
 echo "✅ Formula generated for MayaFlux version $VERSION"
-echo "📦 SHA256 will be verified dynamically at install time for both architectures"
+echo "📦 SHA256 will be verified dynamically at install time for macOS ARM64"

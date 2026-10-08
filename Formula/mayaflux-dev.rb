@@ -8,23 +8,18 @@ class MayafluxDev < Formula
   license all_of: ["GPL-3.0-or-later", "Apache-2.0", "BSD-3-Clause", "MIT"]
   conflicts_with "mayaflux", because: "both install MayaFlux binaries"
   
-  on_arm do
-    url "https://github.com/MayaFlux/MayaFlux/releases/download/v#{version}/MayaFlux-#{version}-macos-arm64.tar.gz"
-  end
-  
-  on_intel do
-    url "https://github.com/MayaFlux/MayaFlux/releases/download/v#{version}/MayaFlux-#{version}-macos-x64.tar.gz"
-  end
+  url "https://github.com/MayaFlux/MayaFlux/releases/download/v#{version}/MayaFlux-#{version}-macos-arm64.tar.gz"
+
+  depends_on :macos
+  depends_on arch: :arm64
   
   depends_on "pkg-config"
   depends_on "llvm"
   depends_on "ffmpeg"
   depends_on "assimp"
   depends_on "alembic"
-  depends_on "glfw"
   depends_on "glm"
   depends_on "eigen"
-  depends_on "onedpl"
   depends_on "googletest"
   depends_on "vulkan-headers"
   depends_on "vulkan-loader"
@@ -96,7 +91,7 @@ class MayafluxDev < Formula
     <<~EOS
       MayaFlux #{version} has been installed!
       
-      To set up your environment, add this to your ~/.zshenv:
+      To set up your environment, add this to your ~/.zshenv or $ZDOTDIR/.zshenv:
         export MAYAFLUX_ROOT="#{opt_prefix}"
         source "\$MAYAFLUX_ROOT/env.sh"
       
