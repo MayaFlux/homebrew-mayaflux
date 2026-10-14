@@ -12,10 +12,8 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: macos-14
+          - os: macos-26
             name: "macOS ARM64"
-          - os: macos-15-intel
-            name: "macOS Intel"
     runs-on: ${{ matrix.os }}
     name: ${{ matrix.name }}
     
@@ -30,5 +28,5 @@ jobs:
 
       - name: Verify installation
         run: |
-          ls -la /opt/homebrew/opt/mayaflux-dev/ || ls -la /usr/local/opt/mayaflux-dev/
+          ls -la /opt/homebrew/opt/mayaflux-dev/
           echo "✅ Installation successful"
