@@ -14,6 +14,8 @@ class MayafluxDev < Formula
   depends_on arch: :arm64
   
   depends_on "pkg-config"
+  depends_on "cmake"
+  depends_on "ninja"
   depends_on "llvm"
   depends_on "ffmpeg"
   depends_on "assimp"
