@@ -4,26 +4,22 @@
 class Mayaflux < Formula
   desc "Modern C++23 framework for real-time graphics and audio with JIT live coding"
   homepage "https://github.com/MayaFlux/MayaFlux"
-  version "0.4.1"
-  license "GPL-3.0-or-later"
+  version "0.5.0"
+  license all_of: ["GPL-3.0-or-later", "Apache-2.0", "BSD-3-Clause", "MIT"]
   conflicts_with "mayaflux-dev", because: "both install MayaFlux binaries"
   
-  on_arm do
-    url "https://github.com/MayaFlux/MayaFlux/releases/download/v#{version}/MayaFlux-#{version}-macos-arm64.tar.gz"
-  end
-  
-  on_intel do
-    url "https://github.com/MayaFlux/MayaFlux/releases/download/v#{version}/MayaFlux-#{version}-macos-x64.tar.gz"
-  end
+  url "https://github.com/MayaFlux/MayaFlux/releases/download/v#{version}/MayaFlux-#{version}-macos-arm64.tar.gz"
+
+  depends_on :macos
+  depends_on arch: :arm64
   
   depends_on "pkg-config"
   depends_on "llvm"
   depends_on "ffmpeg"
-  depends_on "glfw"
+  depends_on "assimp"
+  depends_on "alembic"
   depends_on "glm"
   depends_on "eigen"
-  depends_on "fmt"
-  depends_on "onedpl"
   depends_on "googletest"
   depends_on "vulkan-headers"
   depends_on "vulkan-loader"
@@ -39,11 +35,11 @@ class Mayaflux < Formula
   depends_on "asio"
   depends_on "freetype"
   depends_on "utf8proc"
-  depends_on "assimp"
   depends_on "nlohmann-json"
   depends_on "mayaflux/mayaflux/stb"
   
   def install
+    # Fetch and verify SHA256 dynamically from GitHub release
     ohai "Verifying download integrity..."
     sha_url = "#{stable.url}.sha256"
     
@@ -53,7 +49,7 @@ class Mayaflux < Formula
     if expected_sha != actual_sha
       odie "SHA256 verification failed!\nExpected: #{expected_sha}\nActual: #{actual_sha}"
     end
-    ohai "SHA256 verified: #{actual_sha}"
+    ohai "✅ SHA256 verified: #{actual_sha}"
     
     bin.install Dir["bin/*"]
     lib.install Dir["lib/*"]
@@ -95,14 +91,12 @@ class Mayaflux < Formula
     <<~EOS
       MayaFlux #{version} has been installed!
       
-      To set up your environment, add this to your ~/.zshenv:
+      To set up your environment, add this to your ~/.zshenv or $ZDOTDIR/.zshenv:
         export MAYAFLUX_ROOT="#{opt_prefix}"
         source "\$MAYAFLUX_ROOT/env.sh"
       
       Or run manually:
         source #{opt_prefix}/env.sh
-      
-      Documentation: https://github.com/MayaFlux/MayaFlux
     EOS
   end
   
