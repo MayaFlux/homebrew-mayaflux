@@ -32,7 +32,7 @@ class MayafluxDev < Formula
   depends_on "spirv-cross"
   depends_on "shaderc"
   depends_on "glslang"
-  depends_on "molten-vk"
+  depends_on "mesa"
   depends_on "hidapi"
   depends_on "asio"
   depends_on "freetype"
@@ -72,18 +72,13 @@ class MayafluxDev < Formula
       export Clang_DIR="\$LLVM_PREFIX/lib/cmake/clang"
       export CMAKE_PREFIX_PATH="\$LLVM_PREFIX/lib/cmake:\$CMAKE_PREFIX_PATH"
       
-      if [ -f "#{Formula["molten-vk"].opt_prefix}/share/vulkan/icd.d/MoltenVK_icd.json" ]; then
-        export VK_ICD_FILENAMES="#{Formula["molten-vk"].opt_prefix}/share/vulkan/icd.d/MoltenVK_icd.json"
-      elif [ -f "#{Formula["molten-vk"].opt_prefix}/etc/vulkan/icd.d/MoltenVK_icd.json" ]; then
-        export VK_ICD_FILENAMES="#{Formula["molten-vk"].opt_prefix}/etc/vulkan/icd.d/MoltenVK_icd.json"
-      fi
+      export VK_ICD_FILENAMES="#{HOMEBREW_PREFIX}/share/vulkan/icd.d/kosmickrisp_mesa_icd.aarch64.json"
 
-      MOLTENVK_PREFIX="#{Formula["molten-vk"].opt_prefix}"
       VULKAN_LOADER_PREFIX="#{Formula["vulkan-loader"].opt_prefix}"
       VULKAN_LAYERS_PREFIX="#{Formula["vulkan-validationlayers"].opt_prefix}"
       export VK_LAYER_PATH="\$VULKAN_LAYERS_PREFIX/share/vulkan/explicit_layer.d"
 
-      export DYLD_LIBRARY_PATH="\$MOLTENVK_PREFIX/lib:\$VULKAN_LOADER_PREFIX/lib:\$DYLD_LIBRARY_PATH"
+      export DYLD_LIBRARY_PATH="\$VULKAN_LOADER_PREFIX/lib:\$DYLD_LIBRARY_PATH"
     SHELL
     
     (prefix/".version").write(version.to_s)
