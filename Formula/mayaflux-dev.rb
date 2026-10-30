@@ -65,6 +65,7 @@ class MayafluxDev < Formula
       export MAYAFLUX_ROOT="#{HOMEBREW_PREFIX}"
 
       export CPATH="#{HOMEBREW_PREFIX}/include:\$CPATH"
+      export CPATH="#{opt_prefix}/include/MayaFlux/thirdparty/magic_enum:\$CPATH"
       
       LLVM_PREFIX="#{Formula["llvm"].opt_prefix}"
       export PATH="\$LLVM_PREFIX/bin:\$PATH"

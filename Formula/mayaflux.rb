@@ -5,6 +5,7 @@ class Mayaflux < Formula
   desc "Modern C++23 framework for real-time graphics and audio with JIT live coding"
   homepage "https://github.com/MayaFlux/MayaFlux"
   version "0.5.0"
+  revision 1
   license all_of: ["GPL-3.0-or-later", "Apache-2.0", "BSD-3-Clause", "MIT"]
   conflicts_with "mayaflux-dev", because: "both install MayaFlux binaries"
   
@@ -57,6 +58,12 @@ class Mayaflux < Formula
     lib.install Dir["lib/*"]
     share.install Dir["share/*"]
     (prefix/"include").install Dir["include/*"]
+
+    # The 0.5.0 archive gives lila_server a build-time /usr/local/lib RPATH.
+    # Resolve its adjacent MayaFlux libraries from this Homebrew keg instead.
+    server = bin/"lila_server"
+    system "/usr/bin/install_name_tool", "-add_rpath", "@executable_path/../lib", server
+    system "/usr/bin/codesign", "--force", "--sign", "-", server
     
     (prefix/"env.sh").write <<~SHELL
       # MayaFlux Environment Setup
@@ -65,6 +72,7 @@ class Mayaflux < Formula
       export MAYAFLUX_ROOT="#{HOMEBREW_PREFIX}"
 
       export CPATH="#{HOMEBREW_PREFIX}/include:\$CPATH"
+      export CPATH="#{opt_prefix}/include/MayaFlux/thirdparty/magic_enum:\$CPATH"
       
       LLVM_PREFIX="#{Formula["llvm"].opt_prefix}"
       export PATH="\$LLVM_PREFIX/bin:\$PATH"
